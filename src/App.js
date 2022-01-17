@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-import './App.css';
+import styles from './App.module.css';
 
 import O from './components/O';
 import X from './components/X';
@@ -32,17 +32,17 @@ function App() {
     setStep(step + 1);
   };
 
-  const handleClickPlayAgain = () => {
+  const handleClickPlayAgain = useCallback(() => {
     setCells([...initialState]);
     setStep(0);
-  };
+  }, []);
 
   return (
     <div>
       <button onClick={handleClickPlayAgain}>Play again</button>
-      <div className="grid-container">
+      <div className={styles['grid-container']}>
         {cells.map((cellVal, cellIndex) =>
-          <div key={cellIndex} className="grid-item" onClick={() => {
+          <div key={cellIndex} className={styles['grid-item']} onClick={() => {
             handleClickGrid(cellIndex);
           }}>
             {cellVal === 1 && <X />}
