@@ -1,23 +1,55 @@
-import logo from './logo.svg';
+import { useState, useCallback } from 'react';
+
 import './App.css';
 
+import O from './components/O';
+import X from './components/X';
+
+// { // Redux store
+// 	games: [gameId, gameId],
+// }
+
+
+// interface Game {
+// 	id: number;
+// 	players: Player[];
+// 	cells: Number[]
+// }
+
+const initialState = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+
 function App() {
+  const [cells, setCells] = useState([...initialState]); // 0 = no, 1 == x, 2 == o
+  const [step, setStep] = useState(0);
+
+  const handleClickGrid = (cellIndex) => {
+    const player = step % 2 + 1;
+
+    if (cells[cellIndex]) { return; }
+
+    cells[cellIndex] = player;
+    setCells([...cells]);
+    setStep(step + 1);
+  };
+
+  const handleClickPlayAgain = () => {
+    setCells([...initialState]);
+    setStep(0);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <button onClick={handleClickPlayAgain}>Play again</button>
+      <div className="grid-container">
+        {cells.map((cellVal, cellIndex) =>
+          <div key={cellIndex} className="grid-item" onClick={() => {
+            handleClickGrid(cellIndex);
+          }}>
+            {cellVal === 1 && <X />}
+            {cellVal === 2 && <O />}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
