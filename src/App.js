@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useGetUsersQuery, useCreateGameMutation } from './services/index';
 
 import styles from './App.module.css';
 
@@ -6,13 +7,20 @@ import O from './components/O';
 import X from './components/X';
 
 const initialState = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-const LAST_STEP = 8;
-
 
 function App() {
   const [cells, setCells] = useState([...initialState]); // 0 = no, 1 == x, 2 == o
   const [step, setStep] = useState(0);
   const player = step % 2 + 1;
+
+  const [
+    createGame,
+    {
+      isLoading: isCreatingGame,
+      isSuccess: isGameCreated,
+      data: game
+    }
+  ] = useCreateGameMutation();
 
   const isVictory = (cells) => {
     const positions = [
@@ -36,14 +44,17 @@ function App() {
     setStep(step + 1);
   };
 
-  const handleClickPlayAgain = useCallback(() => {
-    setCells([...initialState]);
-    setStep(0);
+  const handleCreateNewGame = useCallback(() => {
+    createGame();
+    // setCells([...initialState]);
+    // setStep(0);
   }, []);
 
   return (
     <div>
-      <button onClick={handleClickPlayAgain}>Play again</button>
+      <button onClick={handleCreateNewGame}>Create new game</button>
+      {isCreatingGame && 'Creating game'}
+      {isGameCreated && `Room id: ${game.id}`}
       <div className={styles['grid-container']}>
         {cells.map((cellVal, cellIndex) =>
           <div key={cellIndex} className={styles['grid-item']} onClick={() => {

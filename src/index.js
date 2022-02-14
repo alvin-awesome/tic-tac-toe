@@ -1,12 +1,19 @@
 import React from 'react';
+import { ApiProvider } from '@reduxjs/toolkit/query/react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import fakeApi from './fakeApi';
 import reportWebVitals from './reportWebVitals';
+import { gameApis } from './services';
+
+fakeApi();
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ApiProvider api={gameApis}>
+      <App />
+    </ApiProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
