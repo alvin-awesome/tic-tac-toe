@@ -12,24 +12,21 @@ export default function server() {
     routes() {
       this.namespace = 'api';
 
+      this.post('/game', function (schema) {
+        const newGame = {
+          id: uuid(),
+        };
+        schema.games.create(newGame);
+        return newGame;
+      });
+
       this.get('/game/:id', function (schema, request) {
         let id = request.params.id;
         return schema.games.find(id);
       });
 
-      this.post('/game/:id', function (schema, request) {
+      this.patch('/game/:id', function (schema, request) {
         const attrs = JSON.parse(request.requestBody);
-      });
-
-      this.post('/game', function (schema) {
-        const newGame = {
-          id: uuid(),
-          player: 0,
-          step: 0,
-          cells: Array(9).fill(0),
-        };
-        schema.games.create(newGame);
-        return newGame;
       });
     },
   });
