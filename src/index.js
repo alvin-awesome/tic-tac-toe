@@ -3,7 +3,7 @@ import { ApiProvider } from '@reduxjs/toolkit/query/react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import fakeApi from './fakeApi';
+import fakeApi from './server/game';
 import reportWebVitals from './reportWebVitals';
 import { gameApis } from './services';
 
