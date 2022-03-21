@@ -3,11 +3,17 @@ import { v4 as uuid } from 'uuid';
 
 export default function server() {
   createServer({
+    seeds(_server) {
+      _server.create('player', { id: 1 });
+      _server.create('player', { id: 2 });
+    },
     models: {
       game: Model,
+      player: Model,
     },
     factories: {
       game: Factory.extend({}),
+      player: Factory.extend({}),
     },
     routes() {
       this.namespace = 'api';
