@@ -10,10 +10,12 @@ export default function server() {
     models: {
       game: Model,
       player: Model,
+      record: Model,
     },
     factories: {
       game: Factory.extend({}),
       player: Factory.extend({}),
+      record: Factory.extend({}),
     },
     routes() {
       this.namespace = 'api';
