@@ -1,4 +1,11 @@
-import { createServer, Model, Factory, hasMany, belongsTo } from 'miragejs';
+import {
+  createServer,
+  Model,
+  Factory,
+  hasMany,
+  belongsTo,
+  RestSerializer,
+} from 'miragejs';
 import { v4 as uuid } from 'uuid';
 
 export default function server() {
@@ -10,12 +17,19 @@ export default function server() {
     models: {
       game: Model.extend({ record: hasMany(), player: hasMany() }),
       player: Model.extend({ game: hasMany(), record: hasMany() }),
-      record: Model.extend({ game: belongsTo() }),
+      record: Model.extend({ game: belongsTo(), player: belongsTo() }),
     },
     factories: {
       game: Factory.extend({}),
       player: Factory.extend({}),
       record: Factory.extend({}),
+    },
+    serializers: {
+      game: RestSerializer.extend({
+        root: false,
+        embed: true,
+        include: ['player', 'record'],
+      }),
     },
     routes() {
       this.namespace = 'api';
@@ -24,8 +38,13 @@ export default function server() {
         // FIXME: figure out relation between game and player, game and record
         const newGame = {
           id: uuid(),
+          player: [
+            schema.create('player', { id: 1 }),
+            schema.create('player', { id: 2 }),
+          ],
+          record: [],
         };
-        schema.games.create(newGame);
+        schema.create('game', newGame);
         return newGame;
       });
 
@@ -37,7 +56,7 @@ export default function server() {
         // }
         const game = schema.games.find(id);
         console.log('game', game.record, game.player, schema.games.find(id));
-        return schema.games.find(id);
+        return game;
       });
 
       this.patch('/game/:id', function (schema, request) {
