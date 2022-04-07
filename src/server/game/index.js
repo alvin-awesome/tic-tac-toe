@@ -48,15 +48,23 @@ export default function server() {
         return newGame;
       });
 
+      /**
+       * GET /game/:id
+       * {
+       *   players: Player[],
+       *   records: [{ player, cell }, { player, cell }, { player, cell }, ...]
+       * }
+       */
       this.get('/game/:id', function (schema, request) {
         let id = request.params.id;
-        // {
-        //   players: Number[],
-        //   records: [{ player, cell }, { player, cell }, { player, cell }, ...]
-        // }
-        const game = schema.games.find(id);
-        console.log('game', game.record, game.player, schema.games.find(id));
-        return game;
+        const schemaGame = schema.games.find(id);
+        const res = this.serialize(schemaGame);
+
+        return {
+          id: schemaGame.id,
+          records: res.record,
+          players: res.player,
+        };
       });
 
       this.patch('/game/:id', function (schema, request) {
