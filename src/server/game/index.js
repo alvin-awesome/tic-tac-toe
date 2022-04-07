@@ -34,8 +34,14 @@ export default function server() {
     routes() {
       this.namespace = 'api';
 
+      /**
+       * POST /game
+       * {
+       *   players: Player[],
+       *   records: [{ player, cell }, { player, cell }, { player, cell }, ...]
+       * }
+       */
       this.post('/game', function (schema) {
-        // FIXME: figure out relation between game and player, game and record
         const newGame = {
           id: uuid(),
           player: [
@@ -44,8 +50,13 @@ export default function server() {
           ],
           record: [],
         };
-        schema.create('game', newGame);
-        return newGame;
+        const schemaGame = this.serialize(schema.create('game', newGame));
+
+        return {
+          id: schemaGame.id,
+          players: schemaGame.player,
+          records: schemaGame.record,
+        };
       });
 
       /**
