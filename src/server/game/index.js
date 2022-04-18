@@ -78,8 +78,15 @@ export default function server() {
         };
       });
 
-      this.patch('/game/:id', function (schema, request) {
+      this.post('/game/:id/record', function (schema, request) {
         const attrs = JSON.parse(request.requestBody);
+        const record = schema.create('record', {
+          game: schema.games.find(request.params.id),
+          player: schema.players.find(attrs.player),
+          step: attrs.step,
+          cell: attrs.cell,
+        });
+        return { id: record.id };
       });
     },
   });

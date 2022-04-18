@@ -1,5 +1,9 @@
 import { useState, useCallback } from 'react';
-import { useGetGameQuery, useCreateGameMutation } from './services/index';
+import {
+  useGetGameQuery,
+  useCreateGameMutation,
+  useAddGameRecordMutation,
+} from './services/index';
 
 import styles from './App.module.css';
 
@@ -9,7 +13,6 @@ import X from './components/X';
 const initialState = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 function App() {
-  // TODO: 4/18 update game with miragejs API whenever player move
   const [cells, setCells] = useState([...initialState]); // 0 = no, 1 == x, 2 == o
   const [step, setStep] = useState(0);
   const player = (step % 2) + 1;
@@ -26,6 +29,14 @@ function App() {
   } = useGetGameQuery(game?.id, {
     skip: !game?.id,
   });
+  const [
+    addGameRecord,
+    {
+      isLoading: isAddingGameRecord,
+      isSuccess: isGameRecordAdded,
+      data: record,
+    },
+  ] = useAddGameRecordMutation();
 
   const isVictory = (cells) => {
     const positions = [
@@ -52,30 +63,24 @@ function App() {
       return;
     }
 
+    addGameRecord({ id: game?.id, player, cell: cellIndex, step });
+
+    // TODO: 5/2 invalidate game tag, in order to trigger query again.
+
     cells[cellIndex] = player;
     setCells([...cells]);
     setStep(step + 1);
   };
 
-  const handleCreateNewGame = useCallback(() => {
-    createGame();
-    // setCells([...initialState]);
-    // setStep(0);
-  }, []);
-
-  const handleFetchGame = useCallback(() => {
-    refetchGame();
-  }, []);
-
   return (
     <div>
       <div>
-        <button onClick={handleCreateNewGame}>Create new game</button>
+        <button onClick={createGame}>Create new game</button>
         {isCreatingGame && 'Creating game'}
         {isGameCreated && `Room id: ${game.id}`}
       </div>
       <div>
-        <button onClick={handleFetchGame}>Fetch game</button>
+        <button onClick={refetchGame}>Fetch game</button>
         {isFetchingGame && 'Fetching game by id'}
         {isGameFetched && `Room id: ${game.id}`}
       </div>
