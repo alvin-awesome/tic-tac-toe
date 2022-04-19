@@ -1,7 +1,6 @@
 import {
   createServer,
   Model,
-  Factory,
   hasMany,
   belongsTo,
   RestSerializer,
@@ -18,11 +17,6 @@ export default function server() {
       game: Model.extend({ record: hasMany(), player: hasMany() }),
       player: Model.extend({ game: hasMany(), record: hasMany() }),
       record: Model.extend({ game: belongsTo(), player: belongsTo() }),
-    },
-    factories: {
-      game: Factory.extend({}),
-      player: Factory.extend({}),
-      record: Factory.extend({}),
     },
     serializers: {
       game: RestSerializer.extend({
@@ -44,11 +38,7 @@ export default function server() {
       this.post('/game', function (schema) {
         const newGame = {
           id: uuid(),
-          player: [
-            schema.create('player', { id: 1 }),
-            schema.create('player', { id: 2 }),
-          ],
-          record: [],
+          playerIds: [1, 2],
         };
         const schemaGame = this.serialize(schema.create('game', newGame));
 
