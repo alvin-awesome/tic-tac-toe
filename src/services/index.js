@@ -11,6 +11,7 @@ export const gameApis = createApi({
     }),
     getGame: builder.query({
       query: (id) => `/game/${id}`,
+      providesTags: (result, error, arg) => [{ type: 'Game', id: result.id }]
     }),
     addGameRecord: builder.mutation({
       query: (data) => {
@@ -21,6 +22,7 @@ export const gameApis = createApi({
           body,
         };
       },
+      invalidatesTags: (result, error, arg) => [{ type: 'Game', id: arg.id }]
     }),
   }),
   // query: (id) => ({ url: `post/${id}` }),

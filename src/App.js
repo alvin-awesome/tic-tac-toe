@@ -65,8 +65,6 @@ function App() {
 
     addGameRecord({ id: game?.id, player, cell: cellIndex, step });
 
-    // TODO: 5/2 invalidate game tag, in order to trigger query again.
-
     cells[cellIndex] = player;
     setCells([...cells]);
     setStep(step + 1);
