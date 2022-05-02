@@ -12,11 +12,11 @@ import X from './components/X';
 
 const initialState = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-function App() {
-  const [cells, setCells] = useState([...initialState]); // 0 = no, 1 == x, 2 == o
-  const [step, setStep] = useState(0);
-  const player = (step % 2) + 1;
+function getPlayerByStep(step) {
+  return (step % 2) + 1;
+}
 
+function App() {
   const [
     createGame,
     { isLoading: isCreatingGame, isSuccess: isGameCreated, data: game },
@@ -37,6 +37,13 @@ function App() {
       data: record,
     },
   ] = useAddGameRecordMutation();
+
+  const step = gameWithId?.records?.length || 0;
+  const player = getPlayerByStep(step);
+  const cells = gameWithId?.records.reduce((result, value, key) => {
+    result[value.cell] = getPlayerByStep(value.step);
+    return result;
+  }, initialState) || initialState;
 
   const isVictory = (cells) => {
     const positions = [
@@ -62,12 +69,13 @@ function App() {
     if (cells[cellIndex]) {
       return;
     }
-
-    addGameRecord({ id: game?.id, player, cell: cellIndex, step });
-
-    cells[cellIndex] = player;
-    setCells([...cells]);
-    setStep(step + 1);
+    
+    addGameRecord({ 
+      id: game?.id,
+      player,
+      cell: cellIndex,
+      step: gameWithId.records.length 
+    });
   };
 
   return (
@@ -81,6 +89,9 @@ function App() {
         <button onClick={refetchGame}>Fetch game</button>
         {isFetchingGame && 'Fetching game by id'}
         {isGameFetched && `Room id: ${game.id}`}
+      </div>
+      <div>
+        Player: {player}
       </div>
       <div className={styles['grid-container']}>
         {cells.map((cellVal, cellIndex) => (
@@ -96,7 +107,9 @@ function App() {
           </div>
         ))}
       </div>
-      <div>{isVictory(cells) && `player#${player} win`}</div>
+      {isGameFetched && isVictory(cells) && (
+        <div>{`player#${player} win`}</div>
+      )}
     </div>
   );
 }
