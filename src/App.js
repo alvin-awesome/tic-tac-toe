@@ -16,6 +16,8 @@ function getPlayerByStep(step) {
   return (step % 2) + 1;
 }
 
+// TODO: dicuss, next time
+
 function App() {
   const [
     createGame,
@@ -41,8 +43,9 @@ function App() {
   const step = gameWithId?.records?.length || 0;
   const player = getPlayerByStep(step);
   const cells = gameWithId?.records.reduce((result, value, key) => {
-    result[value.cell] = getPlayerByStep(value.step);
-    return result;
+    const newResult = [...result];
+    newResult[value.cell] = getPlayerByStep(value.step);
+    return newResult;
   }, initialState) || initialState;
 
   const isVictory = (cells) => {
